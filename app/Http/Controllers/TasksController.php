@@ -32,7 +32,11 @@ class TasksController extends Controller
     // postでmessages/にアクセスされた場合の「新規登録処理」
     public function store(Request $request)
     {
-        //
+        $task = new Task;
+        $task->content = $request->content;
+        $task->save();
+
+        return redirect('/');
     }
 
     // getでmessages/idにアクセスされた場合の「取得表示処理」
@@ -58,12 +62,19 @@ class TasksController extends Controller
     // putまたはpatchでmessages/idにアクセスされた場合の「更新処理」
     public function update(Request $request, $id)
     {
-        //
+         $task = Task::find($id);
+        $task->content = $request->content;
+        $task->save();
+
+        return redirect('/');
     }
 
     // deleteでmessages/idにアクセスされた場合の「削除処理」
     public function destroy($id)
     {
-        //
+         $task = Task::find($id);
+        $task->delete();
+
+        return redirect('/');
     }
 }
