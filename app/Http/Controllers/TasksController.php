@@ -74,7 +74,7 @@ class TasksController extends Controller
         ]);
 
         $task = Task::find($id);
-        $task->title = $request->title;    // 追加
+        $task->status = $request->status;    // 追加
         $task->content = $request->content;
         $task->save();
 
