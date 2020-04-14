@@ -41,8 +41,12 @@ class TasksController extends Controller
         $task->status = $request->status;    // 追加
         $task->content = $request->content;
         $task->save();
+        
+         $request->user()->tasks()->create([
+            'content' => $request->content,
+        ]);
 
-        return redirect('/');
+        return back();
     }
 
     // getでmessages/idにアクセスされた場合の「取得表示処理」
@@ -85,8 +89,9 @@ class TasksController extends Controller
     public function destroy($id)
     {
          $task = Task::find($id);
-        $task->delete();
-
+        if (\Auth::id() === $task->user_id) {
+                    $task->delete();
+                }
         return redirect('/');
     }
 }
