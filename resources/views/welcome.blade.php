@@ -22,8 +22,8 @@
                         </div>
                     {!! Form::close() !!}
                 @endif
-                @if (count($task) > 0)
-                    @include('task.task', ['task' => $task])
+                @if (count($tasks) > 0)
+                    @include('tasks.tasks', ['tasks' => $tasks])
                 @endif
             </div>
         </div>

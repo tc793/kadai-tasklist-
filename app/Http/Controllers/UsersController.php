@@ -18,14 +18,14 @@ class UsersController extends Controller
         ]);
     }
     
-   public function show($id)
+    public function show($id)
     {
-        $user = User::find($id);
-        $task = $user->tasks()->orderBy('created_at', 'desc')->paginate(10);
+       $user = User::find($id);
+        $tasks = $user->tasks()->orderBy('created_at', 'desc')->paginate(10);
 
         $data = [
             'user' => $user,
-            'tasks' => $tasks,
+            'tasks' => tasks,
         ];
 
         $data += $this->counts($user);

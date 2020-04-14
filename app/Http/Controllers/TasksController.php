@@ -11,11 +11,18 @@ class TasksController extends Controller
     // getでmessages/にアクセスされた場合の「一覧表示処理」
     public function index()
     {
-        $tasks = Task::all();
-
-        return view('tasks.index', [
-            'tasks' => $tasks,
-        ]);
+         $data = [];
+        if (\Auth::check()) {
+            $user = \Auth::user();
+            $tasks = $user->tasks()->orderBy('created_at', 'desc')->paginate(10);
+            
+            $data = [
+                'user' => $user,
+                'tasks' => $tasks,
+            ];
+        }
+        
+        return view('welcome', $data);
     }
     
 
@@ -33,20 +40,12 @@ class TasksController extends Controller
     public function store(Request $request)
     {
          $this->validate($request, [
-            'status' => 'required|max:10',   // 追加
             'content' => 'required|max:191',
         ]);
 
-        $task = new Task;
-        $task->status = $request->status;    // 追加
-        $task->content = $request->content;
-        $task->save();
-        
-         $request->user()->tasks()->create([
+        $request->user()->tasks()->create([
             'content' => $request->content,
         ]);
-
-        return back();
     }
 
     // getでmessages/idにアクセスされた場合の「取得表示処理」
@@ -88,10 +87,12 @@ class TasksController extends Controller
     // deleteでmessages/idにアクセスされた場合の「削除処理」
     public function destroy($id)
     {
-         $task = Task::find($id);
+        $task = \App\Task::find($id);
+
         if (\Auth::id() === $task->user_id) {
-                    $task->delete();
-                }
-        return redirect('/');
+            $task->delete();
+        }
+
+        return back();
     }
 }
