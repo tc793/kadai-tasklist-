@@ -14,7 +14,11 @@ class TasksController extends Controller
          $data = [];
         if (\Auth::check()) {
             $user = \Auth::user();
-            $tasks = $user->tasks()->orderBy('created_at', 'desc')->paginate(10);
+            // 参考　https://techacademy.jp/my/php/laravel5-5-2018/message-board
+            // ->whereで検索
+            $tasks = $user->tasks()
+                          ->where('user_id',\Auth::id())
+                          ->orderBy('created_at', 'desc')->paginate(10);
             
             $data = [
                 'user' => $user,
@@ -39,13 +43,18 @@ class TasksController extends Controller
     // postでmessages/にアクセスされた場合の「新規登録処理」
     public function store(Request $request)
     {
-         $this->validate($request, [
+        $this->validate($request, [
             'content' => 'required|max:191',
         ]);
-
+        
+        
         $request->user()->tasks()->create([
             'content' => $request->content,
+            'status' => $request->status,
         ]);
+        
+        
+        return redirect('/');
     }
 
     // getでmessages/idにアクセスされた場合の「取得表示処理」
@@ -62,11 +71,15 @@ class TasksController extends Controller
     public function edit($id)
     {
         $task = Task::find($id);
-
+        
+        if (\Auth::id() === $task->user_id) {
         return view('tasks.edit', [
             'task' => $task,
         ]);
+        }
+            
     }
+    
 
     // putまたはpatchでmessages/idにアクセスされた場合の「更新処理」
     public function update(Request $request, $id)
@@ -93,6 +106,6 @@ class TasksController extends Controller
             $task->delete();
         }
 
-        return back();
+        return redirect('/');
     }
 }
